@@ -137,3 +137,63 @@ def sha256(input_str):
         return (num >> shift) | (num << size - shift)
 
     return generate_hash(input_str).hex()
+    
+class Node:
+    def __init__(self, name, before):
+        self.name = sha256(name)
+        self.children = []
+        self.before = before
+
+    def set_next(self, next):
+        self.children.append(next)
+
+    def get_next(self):
+        return self.children
+
+    def get_before(self):
+        return self.before
+    
+    def set_children(self, children):
+        self.children = children
+
+class FamilyTree:
+    def __init__(self):
+        self.head = None
+        self.count = 0
+
+    def add(self, name, parent_node_name=None):
+        self.count += 1
+        if parent_node_name is None:
+            self.head = Node(name, None)
+            return
+        parent_node = self.find(parent_node_name)
+        parent_node.set_next(Node(name, parent_node))
+    
+    def find(self, name, head=None, namehash=False):
+        if not namehash:
+            hashed_name = sha256(name)
+        else:
+            hashed_name = name
+
+        if self.head is None:
+            return None
+
+        if head is None:
+            head = self.head
+
+        # if name we were looking for was main head itself
+        if head.name == hashed_name:
+            return head
+        
+        children = head.get_next()
+        if children != []:
+            for child in children:
+                if child.name == hashed_name:
+                    return child
+
+                if not namehash:
+                    x = self.find(name, child)
+                else:
+                    x = self.find(name, child, True)
+                if x is not None:
+                    return x
