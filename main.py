@@ -197,3 +197,69 @@ class FamilyTree:
                     x = self.find(name, child, True)
                 if x is not None:
                     return x
+
+    def delete(self, name):
+        node = self.find(name)
+        p_node = node.get_before()
+        children = p_node.get_next()
+        for child in children:
+            if child == node:
+                children.remove(child)
+                p_node.set_children(children)
+                return
+
+    def size(self):
+        return self.count
+
+    def valed_v_farzand(self, gfather_name, son_name, gfathernamehash=False):
+        hashed_son_name = sha256(son_name)
+        if not gfathernamehash:
+            gfather = self.find(gfather_name)
+        else:
+            gfather = self.find(gfather_name, None, True)
+        children = gfather.get_next()
+        if children != []:
+            for child in children:
+                if child.name == hashed_son_name:
+                    return True
+                if self.valed_v_farzand(child.name, son_name, True):
+                    return True
+        return False
+    
+    def are_siblings(self, name1, name2):
+        name1_node = self.find(name1)
+        name2_node = self.find(name2)
+        if name1_node.get_before() == name2_node.get_before():
+            return True
+        return False
+
+    def are_cousin(self, name1, name2):
+        name1_node = self.find(name1)
+        name2_node = self.find(name2)
+        if name1_node.get_before().get_before() == name2_node.get_before().get_before() and name1_node.get_before() != name2_node.get_before():
+            return True
+        return False
+    
+    def jadde_moshtarak(self, name1, name2):
+        name1_node = self.find(name1)
+        name2_node = self.find(name2)
+
+        name1_list = []
+        name2_list = []
+
+        name1_node = name1_node.get_before()
+        while name1_node is not None:
+            name1_list.append(name1_node)
+            name1_node = name1_node.get_before()
+        name1_list.append(name1_node)
+        
+        name2_node = name2_node.get_before()
+        while name2_node is not None:
+            name2_list.append(name2_node)
+            name2_node = name2_node.get_before()
+        name2_list.append(name2_node)
+
+        for first in name1_list:
+            for second in name2_list:
+                if first == second:
+                    return first.name
