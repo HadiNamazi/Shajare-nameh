@@ -313,12 +313,9 @@ class FamilyTree:
 
         return max
 
-    def diameter(self, node=None, diameter_list=[]):
-        if node is None:
-            node = self.head
-        
-        children = node.get_next()
-        dzl = []
+    def diameter(self, diameter_list=[]):
+        children = self.head.get_next()
+        dzl = []]
         if len(children) > 1:
             for child in children:
                 x = self.doortarin_zaade_with_name(child.name, namehash=True)
