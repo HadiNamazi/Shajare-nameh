@@ -330,3 +330,76 @@ class FamilyTree:
             for second in name2_list:
                 if first == second:
                     return first.name
+
+    def doortarin_zaade(self, name, count=0, namehash=False):
+        if namehash:
+            node = self.find(name, namehash=True)
+        else:
+            node = self.find(name)
+        children = node.get_next()
+
+        if children == []:
+            return count
+
+        depth_list = []
+        for child in children:
+            depth_list.append(self.doortarin_zaade(child.name, count+1, True))
+
+        return max(depth_list)
+    
+    def doortarin_zaade_with_name(self, name, count=0, namehash=False):
+        if namehash:
+            node = self.find(name, namehash=True)
+        else:
+            node = self.find(name)
+        children = node.get_next()
+
+        if children == []:
+            return [count, node.name]
+
+        depth_name_list = []
+        for child in children:
+            depth_name_list.append(self.doortarin_zaade_with_name(child.name, count+1, True))
+
+        max = depth_name_list[0]
+        for i in range(1, len(depth_name_list)):
+            if depth_name_list[i][0] > max[0]:
+                max = depth_name_list[i]
+
+        return max
+
+    def diameter(self, node=None, diameter_list=[]):
+        if node is None:
+            node = self.head
+        
+        children = node.get_next()
+        dzl = []
+        if len(children) > 1:
+            for child in children:
+                x = self.doortarin_zaade_with_name(child.name, namehash=True)
+                x = [x[0]+1, x[1]]
+                dzl.append(x)
+
+            # finding two deeper dz
+            # index 1 and 2: hash // index 0 distance
+            node_diameter = [0, '', '']
+            for i in range(0, 2):
+                max = dzl[0]
+                for j in range(1, len(dzl)):
+                    if dzl[j][0] > max[0]:
+                        max = dzl[j]
+                node_diameter[0] += max[0]
+                node_diameter[i+1] = max[1]
+                dzl.remove(max)
+                dzl.append([-1, ''])
+            
+            diameter_list.append(node_diameter)
+            # for child in node.get_next():
+            #     self.diameter(child, diameter_list)
+
+            max = diameter_list[0]
+            for i in range(1, len(diameter_list)):
+                if diameter_list[i][0] > max[0]:
+                    max[0] = diameter_list[i]
+
+            return [max[0], max[1], max[2]]
