@@ -157,17 +157,21 @@ class Node:
         self.children = children
 
 class FamilyTree:
-    def __init__(self):
+    def __init__(self):#O(1)
         self.head = None
         self.count = 0
+        self.graph = nx.Graph()
 
-    def add(self, name, parent_node_name=None):
+    def add(self, name, parent_node_name=None):#O(n)
         self.count += 1
         if parent_node_name is None:
             self.head = Node(name, None)
+            self.graph.add_nodes_from([self.head.name])
             return
         parent_node = self.find(parent_node_name)
-        parent_node.set_next(Node(name, parent_node))
+        new_node = Node(name, parent_node)
+        parent_node.set_next(new_node)
+        self.graph.add_edges_from([(parent_node.name, new_node.name)])
     
     def find(self, name, head=None, namehash=False):
         if not namehash:
@@ -210,6 +214,11 @@ class FamilyTree:
 
     def size(self):
         return self.count
+
+    def visualize(self):#O(1)
+        pos = nx.spring_layout(self.graph)
+        nx.draw(self.graph, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=5, font_color='black', font_weight='bold', edge_color='gray', linewidths=1, alpha=0.7)
+        plt.show()    
 
     def valed_v_farzand(self, gfather_name, son_name, gfathernamehash=False):
         hashed_son_name = sha256(son_name)
