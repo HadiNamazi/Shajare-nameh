@@ -292,7 +292,8 @@ class FamilyTree:
             depth_list.append(self.doortarin_zaade(child.name, count+1, True))
 
         return max(depth_list)
-    
+        
+    '''
     def doortarin_zaade_with_name(self, name, count=0, namehash=False):
         if namehash:
             node = self.find(name, namehash=True)
@@ -314,7 +315,7 @@ class FamilyTree:
 
         return max
 
-    '''
+
     def diameter2(self, node=None, diameter_list=[]):
         if node is None:
             node = self.head
