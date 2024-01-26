@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+from collections import deque
 
 def sha256(input_str):
     K = [
@@ -313,9 +314,13 @@ class FamilyTree:
 
         return max
 
-    def diameter(self, diameter_list=[]):
-        children = self.head.get_next()
-        dzl = []]
+'''
+    def diameter2(self, node=None, diameter_list=[]):
+        if node is None:
+            node = self.head
+        
+        children = node.get_next()
+        dzl = []
         if len(children) > 1:
             for child in children:
                 x = self.doortarin_zaade_with_name(child.name, namehash=True)
@@ -323,7 +328,6 @@ class FamilyTree:
                 dzl.append(x)
 
             # finding two deeper dz
-            # index 1 and 2: hash // index 0 distance
             node_diameter = [0, '', '']
             for i in range(0, 2):
                 max = dzl[0]
@@ -336,8 +340,8 @@ class FamilyTree:
                 dzl.append([-1, ''])
             
             diameter_list.append(node_diameter)
-            # for child in node.get_next():
-            #     self.diameter(child, diameter_list)
+            for child in node.get_next():
+                self.diameter2(child, diameter_list)
 
             max = diameter_list[0]
             for i in range(1, len(diameter_list)):
@@ -345,3 +349,46 @@ class FamilyTree:
                     max[0] = diameter_list[i]
 
             return [max[0], max[1], max[2]]
+'''
+
+    def furthest_node(self, start_node):
+        farthest_node = None
+        max_length = 0
+
+        distance_queue = deque()
+        node_queue = deque()
+        parent_queue = deque()
+
+        distance_queue.append(0)
+        node_queue.append(start_node)
+        parent_queue.append(None)
+
+        while len(node_queue) > 0:
+            current_node = node_queue.popleft()
+            parent = parent_queue.popleft()
+            current_distance = distance_queue.popleft()
+
+            if max_length < current_distance:
+                max_length = current_distance
+                farthest_node = current_node
+
+            if current_node.get_before() != parent and current_node.get_before() is not None:
+                node_queue.append(current_node.get_before())
+                parent_queue.append(current_node)
+                distance_queue.append(current_distance + 1)
+
+            for child_node in current_node.children:
+                if child_node != parent and child_node is not None:
+                    node_queue.append(child_node)
+                    parent_queue.append(current_node)
+                    distance_queue.append(current_distance + 1)
+
+        return farthest_node
+    
+    def diameter(self):
+        firstEnd = self.furthest_node(self.head)
+        secondEnd = self.furthest_node(firstEnd)
+        return (firstEnd.name, secondEnd.name)
+
+
+
