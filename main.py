@@ -314,7 +314,7 @@ class FamilyTree:
 
         return max
 
-'''
+    '''
     def diameter2(self, node=None, diameter_list=[]):
         if node is None:
             node = self.head
@@ -349,7 +349,7 @@ class FamilyTree:
                     max[0] = diameter_list[i]
 
             return [max[0], max[1], max[2]]
-'''
+    '''
 
     def furthest_node(self, start_node):
         farthest_node = None
